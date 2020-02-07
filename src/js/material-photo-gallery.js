@@ -74,7 +74,7 @@
 	  },
 	  transitionendString,
 	  elem = document.createElement('div');
-	 
+
   for (var t in transitions) {
     if (typeof elem.style[t] !== 'undefined') {
       transitionendString = transitions[t];
@@ -121,7 +121,7 @@
 
 	Gallery.prototype._layout = function() {
 		var gallery = this;
-		var imgLoad = imagesLoaded(document.querySelector('div[data-google-image-layout]'));
+		var imgLoad = imagesLoaded(document.querySelectorAll('div[data-google-image-layout]'));
 
 		imgLoad.on('progress', function(instance, image) {
 		  image.img.setAttribute('data-width', image.img.offsetWidth);
@@ -155,7 +155,7 @@
 			});
 
 			alertBoxMessage.innerHTML = 'Failed to load:' + ' ' + brokenImages;
-			
+
 		});
 
 		window.onresize = debounce(function() {
@@ -249,7 +249,7 @@
 	};
 
 	Gallery.prototype._handleScroll = debounce(function() {
-		this._resetFullImg.call(this);	
+		this._resetFullImg.call(this);
 	}, 25);
 
 	Gallery.prototype._handleResize = function() {
@@ -285,7 +285,7 @@
 
 		}
 
-		this._loadFullImgsDone.call(this);		
+		this._loadFullImgsDone.call(this);
 	};
 
 	Gallery.prototype._loadFullImgsDone = function() {
@@ -293,7 +293,7 @@
 		var imgLoad = imagesLoaded(this._fullBox);
 		imgLoad.on('done', function(instance) {
 			var imgArr = instance.images;
-			
+
 			this._fullImgs = [];
 			this._fullImgDimensions = [];
 			this._fullImgsTransforms = [];
@@ -304,7 +304,7 @@
 				this._positionFullImgs.call(this, imgArr[i].img, i);
 				this._fullImgDimensions.push(rect);
 			}
-			
+
 			this._fullImgsLoaded = true;
 		}.bind(this));
 	};
@@ -312,7 +312,7 @@
 	Gallery.prototype._positionFullImgs = function(img, i, applyTransform) {
 		var transform = this._transformFullImg(img, this._thumbs[i]);
 		this._fullImgsTransforms.push(transform);
-		
+
 		img.style.marginTop = -img.height / 2 + 'px';
 		img.style.marginLeft = -img.width / 2 + 'px';
 		if (applyTransform !== false) {
@@ -357,7 +357,7 @@
 		this._fullImgsTransforms = [];
 
 		for (var i = 0, ii = this._fullImgs.length; i < ii; i++) {
-			
+
 			var size = {
 				width: this._fullImgDimensions[i].width,
 				height: this._fullImgDimensions[i].height,
@@ -440,7 +440,7 @@
 
 		this._setupComplete = true;
 
-		if (fn) fn();	
+		if (fn) fn();
 
 	};
 
@@ -511,7 +511,7 @@
 
 			this._fullImg.addEventListener(transitionendString, fullImgTransEnd);
 			this._enableScroll();
-			
+
 		}.bind(this);
 
 		window.requestAnimationFrame(animation);
@@ -580,7 +580,7 @@
 		function preventDefault(e) {
 			e = e || window.event;
 			if (e.preventDefault) e.preventDefault();
-			e.returnValue = false;  
+			e.returnValue = false;
 		}
 
 		window.onwheel = preventDefault;
@@ -594,7 +594,7 @@
 	 */
 
 	Gallery.prototype._enableScroll = function() {
-		window.onwheel = null; 
+		window.onwheel = null;
 		window.ontouchmove = null;
 	};
 

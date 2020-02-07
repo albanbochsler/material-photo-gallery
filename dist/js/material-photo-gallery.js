@@ -1,5 +1,89 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
+ * eventie v1.0.6
+ * event binding helper
+ *   eventie.bind( elem, 'click', myFn )
+ *   eventie.unbind( elem, 'click', myFn )
+ * MIT license
+ */
+
+/*jshint browser: true, undef: true, unused: true */
+/*global define: false, module: false */
+
+( function( window ) {
+
+'use strict';
+
+var docElem = document.documentElement;
+
+var bind = function() {};
+
+function getIEEvent( obj ) {
+  var event = window.event;
+  // add event.target
+  event.target = event.target || event.srcElement || obj;
+  return event;
+}
+
+if ( docElem.addEventListener ) {
+  bind = function( obj, type, fn ) {
+    obj.addEventListener( type, fn, false );
+  };
+} else if ( docElem.attachEvent ) {
+  bind = function( obj, type, fn ) {
+    obj[ type + fn ] = fn.handleEvent ?
+      function() {
+        var event = getIEEvent( obj );
+        fn.handleEvent.call( fn, event );
+      } :
+      function() {
+        var event = getIEEvent( obj );
+        fn.call( obj, event );
+      };
+    obj.attachEvent( "on" + type, obj[ type + fn ] );
+  };
+}
+
+var unbind = function() {};
+
+if ( docElem.removeEventListener ) {
+  unbind = function( obj, type, fn ) {
+    obj.removeEventListener( type, fn, false );
+  };
+} else if ( docElem.detachEvent ) {
+  unbind = function( obj, type, fn ) {
+    obj.detachEvent( "on" + type, obj[ type + fn ] );
+    try {
+      delete obj[ type + fn ];
+    } catch ( err ) {
+      // can't delete window object properties
+      obj[ type + fn ] = undefined;
+    }
+  };
+}
+
+var eventie = {
+  bind: bind,
+  unbind: unbind
+};
+
+// ----- module definition ----- //
+
+if ( typeof define === 'function' && define.amd ) {
+  // AMD
+  define( eventie );
+} else if ( typeof exports === 'object' ) {
+  // CommonJS
+  module.exports = eventie;
+} else {
+  // browser global
+  window.eventie = eventie;
+}
+
+})( window );
+
+},{}],2:[function(require,module,exports){
+/*!
  * imagesLoaded v3.2.0
  * JavaScript is all like "You images are done yet or what?"
  * MIT License
@@ -384,91 +468,7 @@ function makeArray( obj ) {
 
 });
 
-},{"eventie":2,"wolfy87-eventemitter":3}],2:[function(require,module,exports){
-/*!
- * eventie v1.0.6
- * event binding helper
- *   eventie.bind( elem, 'click', myFn )
- *   eventie.unbind( elem, 'click', myFn )
- * MIT license
- */
-
-/*jshint browser: true, undef: true, unused: true */
-/*global define: false, module: false */
-
-( function( window ) {
-
-'use strict';
-
-var docElem = document.documentElement;
-
-var bind = function() {};
-
-function getIEEvent( obj ) {
-  var event = window.event;
-  // add event.target
-  event.target = event.target || event.srcElement || obj;
-  return event;
-}
-
-if ( docElem.addEventListener ) {
-  bind = function( obj, type, fn ) {
-    obj.addEventListener( type, fn, false );
-  };
-} else if ( docElem.attachEvent ) {
-  bind = function( obj, type, fn ) {
-    obj[ type + fn ] = fn.handleEvent ?
-      function() {
-        var event = getIEEvent( obj );
-        fn.handleEvent.call( fn, event );
-      } :
-      function() {
-        var event = getIEEvent( obj );
-        fn.call( obj, event );
-      };
-    obj.attachEvent( "on" + type, obj[ type + fn ] );
-  };
-}
-
-var unbind = function() {};
-
-if ( docElem.removeEventListener ) {
-  unbind = function( obj, type, fn ) {
-    obj.removeEventListener( type, fn, false );
-  };
-} else if ( docElem.detachEvent ) {
-  unbind = function( obj, type, fn ) {
-    obj.detachEvent( "on" + type, obj[ type + fn ] );
-    try {
-      delete obj[ type + fn ];
-    } catch ( err ) {
-      // can't delete window object properties
-      obj[ type + fn ] = undefined;
-    }
-  };
-}
-
-var eventie = {
-  bind: bind,
-  unbind: unbind
-};
-
-// ----- module definition ----- //
-
-if ( typeof define === 'function' && define.amd ) {
-  // AMD
-  define( eventie );
-} else if ( typeof exports === 'object' ) {
-  // CommonJS
-  module.exports = eventie;
-} else {
-  // browser global
-  window.eventie = eventie;
-}
-
-})( window );
-
-},{}],3:[function(require,module,exports){
+},{"eventie":1,"wolfy87-eventemitter":3}],3:[function(require,module,exports){
 /*!
  * EventEmitter v4.2.11 - git.io/ee
  * Unlicense - http://unlicense.org/
@@ -1098,7 +1098,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 	  },
 	  transitionendString,
 	  elem = document.createElement('div');
-	 
+
   for (var t in transitions) {
     if (typeof elem.style[t] !== 'undefined') {
       transitionendString = transitions[t];
@@ -1145,7 +1145,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 
 	Gallery.prototype._layout = function() {
 		var gallery = this;
-		var imgLoad = imagesLoaded(document.querySelector('div[data-google-image-layout]'));
+		var imgLoad = imagesLoaded(document.querySelectorAll('div[data-google-image-layout]'));
 
 		imgLoad.on('progress', function(instance, image) {
 		  image.img.setAttribute('data-width', image.img.offsetWidth);
@@ -1179,7 +1179,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 			});
 
 			alertBoxMessage.innerHTML = 'Failed to load:' + ' ' + brokenImages;
-			
+
 		});
 
 		window.onresize = debounce(function() {
@@ -1273,7 +1273,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 	};
 
 	Gallery.prototype._handleScroll = debounce(function() {
-		this._resetFullImg.call(this);	
+		this._resetFullImg.call(this);
 	}, 25);
 
 	Gallery.prototype._handleResize = function() {
@@ -1309,7 +1309,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 
 		}
 
-		this._loadFullImgsDone.call(this);		
+		this._loadFullImgsDone.call(this);
 	};
 
 	Gallery.prototype._loadFullImgsDone = function() {
@@ -1317,7 +1317,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 		var imgLoad = imagesLoaded(this._fullBox);
 		imgLoad.on('done', function(instance) {
 			var imgArr = instance.images;
-			
+
 			this._fullImgs = [];
 			this._fullImgDimensions = [];
 			this._fullImgsTransforms = [];
@@ -1328,7 +1328,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 				this._positionFullImgs.call(this, imgArr[i].img, i);
 				this._fullImgDimensions.push(rect);
 			}
-			
+
 			this._fullImgsLoaded = true;
 		}.bind(this));
 	};
@@ -1336,7 +1336,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 	Gallery.prototype._positionFullImgs = function(img, i, applyTransform) {
 		var transform = this._transformFullImg(img, this._thumbs[i]);
 		this._fullImgsTransforms.push(transform);
-		
+
 		img.style.marginTop = -img.height / 2 + 'px';
 		img.style.marginLeft = -img.width / 2 + 'px';
 		if (applyTransform !== false) {
@@ -1381,7 +1381,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 		this._fullImgsTransforms = [];
 
 		for (var i = 0, ii = this._fullImgs.length; i < ii; i++) {
-			
+
 			var size = {
 				width: this._fullImgDimensions[i].width,
 				height: this._fullImgDimensions[i].height,
@@ -1464,7 +1464,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 
 		this._setupComplete = true;
 
-		if (fn) fn();	
+		if (fn) fn();
 
 	};
 
@@ -1535,7 +1535,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 
 			this._fullImg.addEventListener(transitionendString, fullImgTransEnd);
 			this._enableScroll();
-			
+
 		}.bind(this);
 
 		window.requestAnimationFrame(animation);
@@ -1604,7 +1604,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 		function preventDefault(e) {
 			e = e || window.event;
 			if (e.preventDefault) e.preventDefault();
-			e.returnValue = false;  
+			e.returnValue = false;
 		}
 
 		window.onwheel = preventDefault;
@@ -1618,7 +1618,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 	 */
 
 	Gallery.prototype._enableScroll = function() {
-		window.onwheel = null; 
+		window.onwheel = null;
 		window.ontouchmove = null;
 	};
 
@@ -1626,7 +1626,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 });
 
 
-},{"./create-controls":4,"./vendor/google-image-layout":7,"imagesLoaded":1}],7:[function(require,module,exports){
+},{"./create-controls":4,"./vendor/google-image-layout":7,"imagesLoaded":2}],7:[function(require,module,exports){
 /**
  *
  * Google Image Layout v0.0.1

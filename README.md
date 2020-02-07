@@ -1,22 +1,14 @@
 # Material Photo Gallery
 A vanilla javascript photo gallery plugin inspired by Google Photos.
 
-## Demo
-<a href="//ettrics.github.io/material-photo-gallery/">View demo</a>
-
-## Install
-
-#### NPM
-```
-npm install material-photo-gallery --save-dev
-```
 
 #### Usage
 ```js
-var MaterialPhotoGallery = require('material-photo-gallery');
 
-var elem = document.querySelector('.m-p-g');
-var gallery = new MaterialPhotoGallery(elem);
+var elem = document.querySelectorAll('.m-p-g');
+document.addEventListener('DOMContentLoaded', function() {
+    elem.forEach(el => new MaterialPhotoGallery(el))
+});
 ```
 
 #### Include Script
